@@ -19,7 +19,6 @@ public class Key {
 
             if (noteNumber == 12) {
                 octaveNumber++;
-//                noteNumber = octaveNumber < 0 ? 12 : 1;
                 noteNumber = 1;
             } else {
                 noteNumber++;
