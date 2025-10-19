@@ -18,18 +18,14 @@ public class NoteTransposer {
             int octave = note.get(0);
             int noteNum = note.get(1);
 
-            int totalSemitone = octave * NOTES_PER_OCTAVE + noteNum;
+            int totalSemitone = octave * NOTES_PER_OCTAVE + (noteNum - 1);
             int newTotal = totalSemitone + semitone;
 
             int newOctave = Math.floorDiv(newTotal, NOTES_PER_OCTAVE);
-            int newNoteNum = newTotal % NOTES_PER_OCTAVE;
+            int withinOctave = newTotal - newOctave * NOTES_PER_OCTAVE;
+            int newNoteNum = withinOctave + 1;
 
-            if (newNoteNum <= 0) {
-                newNoteNum += NOTES_PER_OCTAVE;
-                newOctave -= 1;
-            }
-
-            if (!isWithinRange(newOctave, newNoteNum)) {
+            if (isOutOfRange(newOctave, newNoteNum)) {
                 throw new OutOfRangeException(
                         "Note [" + newOctave + "," + newNoteNum + "] is out of keyboard range.");
             }
@@ -40,11 +36,12 @@ public class NoteTransposer {
         return result;
     }
 
-    private static boolean isWithinRange(int octave, int note) {
-        if (octave < MIN_OCTAVE || octave > MAX_OCTAVE) return false;
-        if (octave == MIN_OCTAVE && note < 10) return false; // starts from [-3,10]
-        if (octave == MAX_OCTAVE && note > 1) return false;  // ends at [5,1]
-        return true;
+    private static boolean isOutOfRange(int octave, int note) {
+        return
+            octave < MIN_OCTAVE ||
+            octave > MAX_OCTAVE ||
+            (octave == MIN_OCTAVE && note < 10) ||
+            (octave == MAX_OCTAVE && note > 1);
     }
 
     public static class OutOfRangeException extends Exception {
